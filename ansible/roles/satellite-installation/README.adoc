@@ -7,18 +7,18 @@
 :tag4: update_satellite_host
 :tag5: setup_satellite
 :main_file: tasks/main.yml
-:version_file: tasks/version_6.4.yml
+:version_file: tasks/version_6.7.yml
 
 
 Role: {role}
 ============
 
-This role installs and configure satellite and setup firewalld. 
+This role installs and configure satellite and setup firewalld.
 
 Requirements
 ------------
 
-. Basic repository should be configure to install packages. 
+. Basic repository should be configure to install packages.
 
 Role Variables
 --------------
@@ -35,7 +35,7 @@ Role Variables
 
 [source=text]
 ----
-satellite_version: 6.4
+satellite_version: 6.7
 satellite_admin: admin
 satellite_admin_password: password
 firewall_services:
@@ -55,7 +55,7 @@ Tags
 |{tag2} |For firewall tasks
 |{tag3} |For hostname setup tasks
 |{tag4} |For host update tasks
-|{tag5} |For satellite setup tasks 
+|{tag5} |For satellite setup tasks
 |===
 
 * Example tags
@@ -102,7 +102,7 @@ firewall_ports:
 Dependencies
 ------------
 
-Role has dependency of role satellite-public-hostname. 
+Role has dependency of role satellite-public-hostname.
 
 
 Tips to update Role

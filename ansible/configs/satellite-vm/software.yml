@@ -24,7 +24,6 @@
         loop_var: _role
       loop:
         - satellite-installation
-        # - satellite-hammer-cli
 
     - when: configure_satellite
       include_role:
@@ -35,10 +34,23 @@
         - satellite-manage-organization
         - satellite-manage-manifest
         - satellite-manage-repositories
-        # - satellite-manage-lifecycle
-        # - satellite-manage-content-view
-        # - satellite-manage-activationkey
+        - satellite-manage-lifecycle
+        - satellite-manage-content-view
+        - satellite-manage-activationkey
         # - satellite-manage-capsule-certificate
+
+
+- name: Configure satellite hosts
+  hosts: satellite_hosts
+  become: True
+  gather_facts: True
+  tasks:
+    - when: configure_satellite
+      include_role:
+        name: satellite-register-hosts
+        vars:
+          satellite_hostname: "{{ hostvars['satellite']['publicname'] }}"
+
 
 - name: Software flight-check
   hosts: localhost

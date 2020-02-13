@@ -1,31 +1,36 @@
 ---
 
-env_type: satellite-vm 
+env_type: satellite-vm
 output_dir: /tmp/workdir                # Writable working scratch directory
 email: satellite_vm@example.com
-guid: satvm01 
-cloud_provider: ec2 
+cloud_provider: ec2
 aws_region: ap-southeast-2
+guid: satvm01
+osp_cluster_dns_zone: red.osp.opentlc.com
+install_satellite: True
 configure_satellite: True
 
+
 ###### satellite env related variables ###############
-satellite_version: 6.4
+satellite_admin: admin
+satellite_admin_password: admin
+manifest_file: "<manifestFile>.zip"
+cdn_repository_url: http://d3s3zqyaz8cp2d.cloudfront.net/cdn
+
+satellite_version: 6.7
+satellite_repos:
+  - Summit-2020_Summit-Contents_Satellite_6_7_RHEL7
+  - Summit-2020_Summit-Contents_Satellite_Tools_6_7_RHEL7_x86_64
+  - Summit-2020_Summit-Contents_Satellite_Maintenance_Next_RHEL7
+
 org: gpte
 org_label: gpte
 org_description: "Global Partner Training and Enablement"
-lifecycle_environment_path:
-    - name: "Dev"
-      label: "dev"
-      description: "Development Environment"
-      prior_env: "Library"
-    - name: "QA"
-      label: "qa"
-      description: "Quality Environment"
-      prior_env: "Dev"
-    - name: "Prod"
-      label: "prod"
-      description: "Production Enviornment"
-      prior_env: "QA"
+
+satellite_hosts_register_key: 'three_tier_app_key'
+satellite_hosts:
+  - name: skylab
+  - name: aqua
 
 subscription_name: "Employee SKU"
 ########## Activation Key #####################
@@ -33,35 +38,36 @@ satellite_content:
   - name:             "Capsule Server"
     activation_key:   "capsule_key"
     subscriptions:
-      - "Employee SKU"
+      - name: "Employee SKU"
+      - pool_id: "some subscription pool id"
     life_cycle:       "Library"
     content_view:     "Capsule Content"
     content_view_update: False
-    repos:  
-      - name: 'Red Hat Enterprise Linux 7 Server (RPMs)' 
-        product: 'Red Hat Enterprise Linux Server' 
+    repos:
+      - name: 'Red Hat Enterprise Linux 7 Server (RPMs)'
+        product: 'Red Hat Enterprise Linux Server'
         basearch: 'x86_64'
         releasever:  '7Server'
-        
+
       - name: 'Red Hat Software Collections RPMs for Red Hat Enterprise Linux 7 Server'
-        product: 'Red Hat Software Collections for RHEL Server' 
+        product: 'Red Hat Software Collections for RHEL Server'
         basearch: 'x86_64'
         releasever:  '7Server'
-        
+
       - name: 'Red Hat Satellite Capsule 6.4 (for RHEL 7 Server) (RPMs)'
-        product: 'Red Hat Satellite Capsule' 
+        product: 'Red Hat Satellite Capsule'
         basearch: 'x86_64'
-       
+
       - name: 'Red Hat Satellite Maintenance 6 (for RHEL 7 Server) (RPMs)'
-        product: 'Red Hat Enterprise Linux Server' 
+        product: 'Red Hat Enterprise Linux Server'
         basearch: 'x86_64'
-        
+
       - name: 'Red Hat Ansible Engine 2.6 RPMs for Red Hat Enterprise Linux 7 Server'
-        product: 'Red Hat Ansible Engine' 
+        product: 'Red Hat Ansible Engine'
         basearch: 'x86_64'
-      
+
       - name: 'Red Hat Satellite Tools 6.4 (for RHEL 7 Server) (RPMs)'
-        product: 'Red Hat Enterprise Linux Server' 
+        product: 'Red Hat Enterprise Linux Server'
         basearch: 'x86_64'
 
   - name:             "Three Tier App"
@@ -69,84 +75,85 @@ satellite_content:
     content_view:     "Three Tier App Content"
     life_cycle:       "Library"
     subscriptions:
-      - "Employee SKU"
-    repos: 
-      - name: 'Red Hat Enterprise Linux 7 Server (RPMs)' 
-        product: 'Red Hat Enterprise Linux Server' 
+      - name: "Employee SKU"
+      - pool_id: "some subscription pool id"
+    repos:
+      - name: 'Red Hat Enterprise Linux 7 Server (RPMs)'
+        product: 'Red Hat Enterprise Linux Server'
         basearch: 'x86_64'
         releasever:  '7Server'
 
-      - name: 'Red Hat Enterprise Linux 7 Server - Extras (RPMs)' 
-        product: 'Red Hat Enterprise Linux Server' 
+      - name: 'Red Hat Enterprise Linux 7 Server - Extras (RPMs)'
+        product: 'Red Hat Enterprise Linux Server'
         basearch: 'x86_64'
 
       - name: 'Red Hat Satellite Tools 6.4 (for RHEL 7 Server) (RPMs)'
-        product: 'Red Hat Enterprise Linux Server' 
+        product: 'Red Hat Enterprise Linux Server'
         basearch: 'x86_64'
 ...
 
-# ## repositories which can be used 
-#       - name: 'Red Hat Enterprise Linux 7 Server (RPMs)' 
-#         product: 'Red Hat Enterprise Linux Server' 
+# ## repositories which can be used
+#       - name: 'Red Hat Enterprise Linux 7 Server (RPMs)'
+#         product: 'Red Hat Enterprise Linux Server'
 #         basearch: 'x86_64'
 #         releasever:  '7Server'
 
 #       - name: 'Red Hat Software Collections RPMs for Red Hat Enterprise Linux 7 Server'
-#         product: 'Red Hat Software Collections for RHEL Server' 
+#         product: 'Red Hat Software Collections for RHEL Server'
 #         basearch: 'x86_64'
 #         releasever:  '7Server'
 
-#       - name: 'Red Hat Enterprise Linux 7 Server (RPMs)' 
-#         product: 'Red Hat Enterprise Linux Server' 
+#       - name: 'Red Hat Enterprise Linux 7 Server (RPMs)'
+#         product: 'Red Hat Enterprise Linux Server'
 #         basearch: 'x86_64'
-#         releasever:  '7.7'   
+#         releasever:  '7.7'
 
 #       - name: 'Red Hat Enterprise Linux 7 Server - RH Common (RPMs)'
-#         product: 'Red Hat Enterprise Linux Server' 
+#         product: 'Red Hat Enterprise Linux Server'
 #         basearch: 'x86_64'
 #         releasever:  '7Server'
 
-#       - name: 'Red Hat Enterprise Linux 7 Server - Extras (RPMs)' 
-#         product: 'Red Hat Enterprise Linux Server' 
+#       - name: 'Red Hat Enterprise Linux 7 Server - Extras (RPMs)'
+#         product: 'Red Hat Enterprise Linux Server'
 #         basearch: 'x86_64'
-        
+
 #       - name: 'Red Hat Enterprise Linux 7 Server - Optional (RPMs)'
-#         product: 'Red Hat Enterprise Linux Server' 
+#         product: 'Red Hat Enterprise Linux Server'
 #         basearch: 'x86_64'
 #         releasever:  '7Server'
-#       - name: 'Red Hat Enterprise Linux 7 Server (RPMs)' 
-#         product: 'Red Hat Enterprise Linux Server' 
+#       - name: 'Red Hat Enterprise Linux 7 Server (RPMs)'
+#         product: 'Red Hat Enterprise Linux Server'
 #         basearch: 'x86_64'
 #         releasever:  '7Server'
-        
+
 #       - name: 'Red Hat Satellite Capsule 6.4 (for RHEL 7 Server) (RPMs)'
-#         product: 'Red Hat Satellite Capsule' 
+#         product: 'Red Hat Satellite Capsule'
 #         basearch: 'x86_64'
-       
+
 #       - name: 'Red Hat Satellite Maintenance 6 (for RHEL 7 Server) (RPMs)'
-#         product: 'Red Hat Enterprise Linux Server' 
+#         product: 'Red Hat Enterprise Linux Server'
 #         basearch: 'x86_64'
-        
+
 #       - name: 'Red Hat Ansible Engine 2.6 RPMs for Red Hat Enterprise Linux 7 Server'
-#         product: 'Red Hat Ansible Engine' 
+#         product: 'Red Hat Ansible Engine'
 #         basearch: 'x86_64'
 
 # - name: 'Red Hat Software Collections RPMs for Red Hat Enterprise Linux 7 Server'
-#   product: 'Red Hat Software Collections for RHEL Server' 
+#   product: 'Red Hat Software Collections for RHEL Server'
 #   basearch: 'x86_64'
 #   releasever:  '7Server'
 
-# - name: 'Red Hat Enterprise Linux 7 Server (RPMs)' 
-#   product: 'Red Hat Enterprise Linux Server' 
+# - name: 'Red Hat Enterprise Linux 7 Server (RPMs)'
+#   product: 'Red Hat Enterprise Linux Server'
 #   basearch: 'x86_64'
-#   releasever:  '7.7'   
+#   releasever:  '7.7'
 
 # - name: 'Red Hat Enterprise Linux 7 Server - RH Common (RPMs)'
-#   product: 'Red Hat Enterprise Linux Server' 
+#   product: 'Red Hat Enterprise Linux Server'
 #   basearch: 'x86_64'
 #   releasever:  '7Server'
 
 # - name: 'Red Hat Enterprise Linux 7 Server - Optional (RPMs)'
-#   product: 'Red Hat Enterprise Linux Server' 
+#   product: 'Red Hat Enterprise Linux Server'
 #   basearch: 'x86_64'
 #   releasever:  '7Server'
