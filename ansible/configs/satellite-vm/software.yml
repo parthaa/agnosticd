@@ -24,7 +24,6 @@
         loop_var: _role
       loop:
         - satellite-installation
-        # - satellite-hammer-cli
 
     - import_role:
         name: satellite-libvirt
@@ -43,12 +42,25 @@
         - satellite-provisioning
         - satellite-manage-manifest
         - satellite-manage-repositories
-        # - satellite-manage-lifecycle
-        # - satellite-manage-content-view
-        # - satellite-manage-activationkey
-        # - satellite-manage-hostgroup
-        # - satellite-manage-compute-profile
+        - satellite-manage-lifecycle
+        - satellite-manage-content-view
+        - satellite-manage-activationkey
+        - satellite-manage-compute-profile
+        - satellite-manage-hostgroup
         # - satellite-manage-capsule-certificate
+
+
+- name: Configure satellite hosts
+  hosts: satellite_hosts
+  become: True
+  gather_facts: True
+  tasks:
+    - when: configure_satellite
+      include_role:
+        name: satellite-register-host
+        vars:
+          satellite_hostname: "{{ hostvars[groups['satellites'][0]]['publicname'] }}"
+
 
 - name: Software flight-check
   hosts: localhost
