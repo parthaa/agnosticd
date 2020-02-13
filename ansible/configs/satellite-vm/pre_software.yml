@@ -10,30 +10,84 @@
         name: infra-local-create-ssh_key
       when: set_env_authorized_key | bool
 
+- name: Enable epel and install pip
+  hosts: satellites
+  become: true
+  tasks:
+    - name: Gather the rpm package facts
+      package_facts:
+        manager: auto
+    - yum:
+        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        state: present
+      when: "'python-pip' not in ansible_facts.packages"
+    - package:
+        name: python-pip
+      when: "'python-pip' not in ansible_facts.packages"
+
+- name: Install apypie package for foreman-ansible-modules
+  hosts: satellites
+  become: true
+  tasks:
+    - pip:
+        name: apypie
+
 - name: Configure all hosts with Repositories
   hosts:
-    - all:!windows
+    - all:!windows:!satellite_hosts:!satellites
   become: true
   gather_facts: False
   tags:
     - step004
     - common_tasks
   roles:
-    - { role: "set-repositories", when: 'repo_method is defined' }
+    - role: "set-repositories"
+      vars:
+        rhel_repos: "{{ rhel7_repos }}"
+        repo_method: "{{ satellite_repo_method }}"
+        use_own_repos: "{{ satellite_use_own_repos }}"
+      when: 'satellite_repo_method is defined'
     - { role: "set_env_authorized_key", when: 'set_env_authorized_key' }
+
+- name: Configure satellites with Repositories
+  hosts:
+    - satellites
+  become: true
+  gather_facts: False
+  roles:
+    - role: "set-repositories"
+      vars:
+        rhel_repos: "{{ rhel7_repos + satellite_repos }}"
+        repo_method: "satellite"
+        satellite_org: Summit-2020
+        satellite_activationkey: Summit-2020
+        satellite_url: labsat.opentlc.com
+        use_content_view: false
+      when: 'satellite_repo_method is defined'
+    - { role: "set_env_authorized_key", when: 'set_env_authorized_key' }
+  tags:
+    - step004
+    - satellite_tasks
 
 
 - name: Configuring Bastion Hosts
   hosts: bastions
   become: true
   roles:
-    - { role: "common", when: 'install_common' }
-    - {role: "bastion", when: 'install_bastion' }
+    - { role: "common",  when: 'install_common' }
+    - { role: "bastion", when: 'install_bastion' }
     - { role: "bastion-opentlc-ipa", when: 'install_ipa_client' }
-
   tags:
     - step004
     - bastion_tasks
+
+- name: Install pip apypie for foreman-ansible-modules
+  hosts: satellite
+  become: true
+  tasks:
+    - pip:
+        name: apypie
+
 - name: PreSoftware flight-check
   hosts: localhost
   connection: local

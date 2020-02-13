@@ -29,6 +29,7 @@ Role Variables
 |org: "String" |Required |Organization name
 |org_label: "String" |Optional | Organization label in string without space
 |org_description: "String" |Optional | Organization description
+|cdn_repository_url: "String"|Optional | If to sync content from another cdn than https://cdn.redhat.com/
 |satellite_manifest: {Dictionary}
 [cols="1"]
 !===
@@ -50,7 +51,6 @@ Role Variables
 ! Path to the local file
 ! Url for the remote file
 !===
-|cdn_repository_url: "String"|Optional | If to sync content from another cdn than https://cdn.redhat.com/
 |===
 
 
