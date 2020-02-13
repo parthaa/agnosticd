@@ -17,7 +17,7 @@ Requirements
 Following are the requirements:
 
 . Yum repositories are required for bastion and satellite host.
-. Aws credentials are required.
+. Aws or OpenStack credentials are required.
 
 
 Config Variables
@@ -31,8 +31,8 @@ Config Variables
 | output_dir: /tmp/workdir |Required | Writable working scratch directory
 | email: satellite_vm@example.com |Required |  User info for notifications
 | guid: defaultguid | Reqired |Unique identifier
-| cloud_provider: ec2 |Required        | Which AgnosticD Cloud Provider to use
-|aws_regions: "String" |Required | aws region
+| cloud_provider: osp |Required        | Which AgnosticD Cloud Provider to use
+|aws_regions: "String" |Required for AWS | aws region
 |===
 
 
@@ -46,9 +46,7 @@ Config Variables
 |org: "String" |Required |Organization name
 |org_label: "String" |Required | Organization label in string without space
 |org_description: "String" |Required | Organization description
-|lifecycle_environment_path: [list] |Required | Contains nested list of environment path
-|satellite_content: [list] |Required | Main List variable
-|subscription_name: "String" |Required | Subscription name mainly required for manifest role
+| cdn_repository_url: 'my.example.com/cdn' |Optional | Defaults to cdn.redhat.com
 | satellite_manifest: {Dictionary} |Required | Where satellite manifest is stored
 |satellite_libvirt_provisioning: "Bool" |Optional(*false*) | Whether configure libvirt provisioning
 |satellite_libvirt_network: {Dictionary}
@@ -72,7 +70,32 @@ Config Variables
 !First IP to be included in the subnet used for provisioning
 !Last IP to be included in the subnet used for provisioning
 !===
+|lifecycle_environment_path: [list] |Required | Contains nested list of environment path
+|satellite_content: [list *] |Required | Main List variable
 |===
+
+* *_satellite_content_* variable inner structure
+
+[cols="5a,1,3a"]
+|===
+|*Variable* | *State* |*Description*
+|name: String   |Required | Name of the content
+|subscriptions: [list of string] |Required | What subscriptions to use for this content
+|life_cycle: "String" |Required |What life cycle env to register to
+|content_view: "String" |Required |Content View name
+|org_label: "String" |Required | Organization label in string without space
+|sync: "boolean" |Optional(*yes*) | Wether to sync the content right away
+|repos: [list of repos]
+!===
+!name: "String" ! Required ! Name
+!product: "String" ! Required ! Product to add repo to
+!basearch: "String" ! Optional ! Architecture to add repo for
+!releasever: "String" ! Optional ! Release version
+!sync: "boolean" |Optional(*yes*) | Sync the content right away
+!===
+|Required | Repositories to enable and add to the content view
+|===
+
 
 [NOTE]
 For more about variables read README.adoc of the roles.
@@ -98,7 +121,6 @@ satellite_version: 6.4
 org: gpte
 org_label: gpte
 org_description: "Global Partner Training and Enablement"
-subscription_name: "Employee SKU"
 
 satellite_libvirt_provisioning: yes
 satellite_libvirt_network:
@@ -154,7 +176,10 @@ satellite_content:
 ----
 for reference look at link:sample_vars.yml[]
 
-. Sample of secrets.yml
+For reference on AWS variables look at link:sample_vars_ec2.yml[]
+For reference on OpenStack variables look at link:sample_vars_osp.yml[]
+
+. Sample of AWS secrets.yml
 [source=text]
 ----
 [user@desktop ~]$ cat ~/secrets.yml
@@ -170,6 +195,30 @@ openstack_pub: XZXYgpVcjl0YmZNVytSb2VGenVrTG80SzlEU2xtUTROMHUzR1BZdzFoTEg3R2hXM
 53ic0NTTnVDblp4bVE9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=
 ----
 
+. Sample of OpenStack secrets.yml
+[source=text]
+----
+[user@desktop ~]$ cat ~/secrets.yml
+# Authenication for OpenStack in order to create the things
+# RED
+osp_auth_username: xxxxxx-xxxx-user
+osp_auth_password: xxxxxxxxxx
+osp_project_name: xxxxxx-xxxx-project
+osp_project_id: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+osp_auth_url: http://169.47.188.15:5000/v3
+osp_auth_project_domain: default
+osp_auth_user_domain: default
+
+osp_cluster_dns_server: ddns01.opentlc.com
+osp_cluster_dns_zone: <cluster>.osp.opentlc.com
+ddns_key_name: xxxxxxxxxx
+ddns_key_secret: xxxxxxxxxx
+
+own_repo_path: "http://d3s3zqyaz8cp2d.cloudfront.net/repos/satellite"
+osp_project_create: false
+----
 
 
 Roles
@@ -224,19 +273,11 @@ How to use config (for instance, with variables passed in playbook).
 
 [source=text]
 ----
-[user@desktop ~]$ cat ~/satellite_vars.yml
----
-guid: 'defaultguid'
-satellite_admin: admin
-satellite_admin_password: 'changeme'
-satellite_manifest:
-  type: 'file'
-  path: '/path/to/manifest_satellite_6.4.zip'
+[user@desktop ~]$ source openstack-ansible-2.9/bin/activate
+(openstack-ansible-2.9)[user@desktop ~]$ cd agnosticd/ansible
 
-[user@desktop ~]$ cd agnosticd/ansible
-
-[user@desktop ~]$ ansible-playbook  main.yml \
-  -e @./configs/satellite-vm/sample_vars.yml \
+(openstack-ansible-2.9)[user@desktop ~]$ ansible-playbook  main.yml \
+  -e @./configs/satellite-vm/sample_vars_osp.yml \
   -e @~/secrets.yml \
   -e @~/satellite_vars.yml
 ----
@@ -246,9 +287,10 @@ Example to stop environment
 
 [source=text]
 ----
-[user@desktop ~]$ cd agnosticd/ansible
+[user@desktop ~]$ source openstack-ansible-2.9/bin/activate
+(openstack-ansible-2.9)[user@desktop ~]$ cd agnosticd/ansible
 
-[user@desktop ~]$ ansible-playbook  ./configs/satellite-vm/stop.yml \
+(openstack-ansible-2.9)[user@desktop ~]$ ansible-playbook  ./configs/satellite-vm/stop.yml \
   -e @./configs/satellite-vm/sample_vars.yml \
   -e @~/secrets.yml \
   -e guid=defaultguid
@@ -259,9 +301,10 @@ Example to start environment
 
 [source=text]
 ----
-[user@desktop ~]$ cd agnosticd/ansible
+[user@desktop ~]$ source openstack-ansible-2.9/bin/activate
+(openstack-ansible-2.9)[user@desktop ~]$ cd agnosticd/ansible
 
-[user@desktop ~]$ ansible-playbook  ./configs/satellite-vm/start.yml \
+(openstack-ansible-2.9)[user@desktop ~]$ ansible-playbook  ./configs/satellite-vm/start.yml \
   -e @./configs/satellite-vm/sample_vars.yml \
   -e @~/secrets.yml \
   -e guid=defaultguid
@@ -272,9 +315,10 @@ Example to destroy environment
 
 [source=text]
 ----
-[user@desktop ~]$ cd agnosticd/ansible
+[user@desktop ~]$ source openstack-ansible-2.9/bin/activate
+(openstack-ansible-2.9)[user@desktop ~]$ cd agnosticd/ansible
 
-[user@desktop ~]$ ansible-playbook  ./configs/satellite-vm/destroy.yml \
+(openstack-ansible-2.9)[user@desktop ~]$ ansible-playbook  ./configs/satellite-vm/destroy.yml \
   -e @./configs/satellite-vm/sample_vars.yml \
   -e @~/secrets.yml \
   -e guid=defaultguid
