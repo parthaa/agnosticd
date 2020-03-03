@@ -18,7 +18,9 @@
       when: cloud_provider == 'azure'
 
 - name: Unsubscribe systems
-  hosts: all
+  hosts:
+    - satellites
+    - capsules
   become: true
   gather_facts: false
   ignore_errors: true

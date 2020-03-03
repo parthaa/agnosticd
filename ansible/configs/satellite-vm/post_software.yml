@@ -6,18 +6,6 @@
     - debug:
         msg: "Post-Software tasks Started"
 
-
-- name: Step lab post software deployment
-  hosts: bastions
-  gather_facts: False
-  become: yes
-  tags:
-    - opentlc_bastion_tasks
-  tasks:
-    - import_role:
-        name: bastion-opentlc-ipa
-      when: install_ipa_client|bool
-
 - name: Verify satellite installation
   hosts: satellites
   gather_facts: false
