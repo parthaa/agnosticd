@@ -12,6 +12,10 @@
     --foreman-admin-username {{ satellite_admin }}
     --foreman-admin-password {{ satellite_admin_password }}
     --certs-cname {{inventory_hostname}}
+    --foreman-proxy-dhcp true
+    --foreman-proxy-dhcp-provider libvirt
+    --foreman-proxy-dns true
+    --foreman-proxy-dns-provider libvirt
   async: 3600
   poll: 72
   tags:

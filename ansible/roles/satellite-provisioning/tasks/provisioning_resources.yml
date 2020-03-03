@@ -1,0 +1,54 @@
+---
+- name: Setting up libvirt compute resource
+  theforeman.foreman.foreman_compute_resource:
+    name: LibvirtLocal
+    locations:
+      - Default Location
+    organizations:
+      - "{{ org }}"
+    provider: libvirt
+    provider_params:
+      url: "qemu:///system"
+      display_type: vnc
+    server_url: "https://{{ publicname }}"
+    username: "{{ satellite_admin }}"
+    password: "{{ satellite_admin_password }}"
+    state: present
+
+- name: Create libvirt domain
+  theforeman.foreman.foreman_domain:
+    name: "summit.example.org"
+    description: "Domain for summit provisioning"
+    organizations:
+      - "{{ org }}"
+    locations:
+      - "Default Location"
+    server_url: "https://{{ publicname }}"
+    username: "{{ satellite_admin }}"
+    password: "{{ satellite_admin_password }}"
+    state: present
+
+- name: Create libvirt subnet
+  theforeman.foreman.foreman_subnet:
+    name: "SummitLocal"
+    description: "Network for summit provisioning"
+    network: "192.168.122.0"
+    mask: "255.255.255.0"
+    gateway: "192.168.122.1"
+    from_ip: "192.168.122.2"
+    to_ip: "192.168.122.254"
+    boot_mode: "Static"
+    dhcp_proxy: "{{ publicname }}"
+    tftp_proxy: "{{ publicname }}"
+    dns_proxy: "{{ publicname }}"
+    mtu: 9000
+    domains:
+      - "summit.example.org"
+    organizations:
+      - "{{ org }}"
+    locations:
+      - "Default Location"
+    server_url: "https://{{ publicname }}"
+    username: "{{ satellite_admin }}"
+    password: "{{ satellite_admin_password }}"
+    state: present

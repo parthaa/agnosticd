@@ -25,6 +25,10 @@
       loop:
         - satellite-installation
 
+    - import_role:
+        name: satellite-libvirt
+      when: configure_satellite
+
     - when: configure_satellite
       include_role:
         name: "{{ _role }}"
@@ -32,6 +36,7 @@
         loop_var: _role
       loop:
         - satellite-manage-organization
+        - satellite-provisioning
         - satellite-manage-manifest
         - satellite-manage-repositories
         - satellite-manage-lifecycle

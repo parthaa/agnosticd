@@ -10,29 +10,7 @@
         name: infra-local-create-ssh_key
       when: set_env_authorized_key | bool
 
-- name: Enable epel and install pip
-  hosts: satellites
-  become: true
-  tasks:
-    - name: Gather the rpm package facts
-      package_facts:
-        manager: auto
-    - yum:
-        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-        state: present
-      when: "'python-pip' not in ansible_facts.packages"
-    - package:
-        name: python-pip
-      when: "'python-pip' not in ansible_facts.packages"
-
-- name: Install apypie package for foreman-ansible-modules
-  hosts: satellites
-  become: true
-  tasks:
-    - pip:
-        name: apypie
-
-- name: Configure all hosts with Repositories
+- name: Configure rest of the hosts with Repositories
   hosts:
     - all:!windows:!satellite_hosts:!satellites
   become: true
@@ -54,6 +32,9 @@
     - satellites
   become: true
   gather_facts: False
+  tags:
+    - step004
+    - satellite_tasks
   roles:
     - role: "set-repositories"
       vars:
@@ -65,9 +46,30 @@
         use_content_view: false
       when: 'satellite_repo_method is defined'
     - { role: "set_env_authorized_key", when: 'set_env_authorized_key' }
-  tags:
-    - step004
-    - satellite_tasks
+
+- name: Enable epel and install pip and libvirt gem
+  hosts: satellites
+  become: true
+  tasks:
+    - name: Gather the rpm package facts
+      package_facts:
+        manager: auto
+    - yum:
+        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        state: present
+    - package:
+        name: python-pip
+      when: "'python-pip' not in ansible_facts.packages"
+    - package:
+        name: rubygem-ruby-libvirt
+      when: "'rubygem-ruby-libvirt' not in ansible_facts.packages"
+
+- name: Install apypie package for foreman-ansible-modules
+  hosts: satellites
+  become: true
+  tasks:
+    - pip:
+        name: apypie
 
 
 - name: Configuring Bastion Hosts

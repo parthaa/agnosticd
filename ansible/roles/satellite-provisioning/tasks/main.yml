@@ -1,0 +1,5 @@
+---
+- import_tasks: provisioning_resources.yml
+  tags:
+    - configure_satellite
+    - satellite_provisioning

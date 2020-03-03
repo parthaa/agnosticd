@@ -1,0 +1,10 @@
+---
+- import_tasks: libvirt.yml
+  tags:
+    - configure_satellite
+    - satellite_provisioning
+
+- import_tasks: proxy_libvirt.yml
+  tags:
+    - configure_satellite
+    - satellite_provisioning
