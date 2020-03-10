@@ -1,0 +1,91 @@
+---
+- name: Remove rh-amazon-rhui-client package
+  tags: packer
+  package:
+    name: rh-amazon-rhui-client
+    state: absent
+  when: cloud_provider == 'aws'
+
+- name: Remove all Red Hat repositories
+  redhat_subscription:
+    state: absent
+  ignore_errors: yes
+
+- name: Purge subscriptions
+  shell: 'subscription-manager clean'
+
+- name: Remove satellite Cert
+  tags: packer
+  package:
+    name: katello-ca-consumer-*.noarch
+    state: absent
+
+- name: Download Cert from Satellite
+  get_url:
+    url: "https://{{ satellite_hostname }}/pub/katello-ca-consumer-latest.noarch.rpm"
+    dest: /root/katello-ca-consumer-latest.noarch.rpm
+    mode: 0664
+    validate_certs: no
+
+- name: Install Cert
+  # use rpm here to avoid issue when yum is broken (chicken&egg)
+  command: "rpm -Uvh /root/katello-ca-consumer-latest.noarch.rpm"
+  args:
+    warn: no
+
+- name: Delete Cert Package
+  file:
+    name: /root/katello-ca-consumer-latest.noarch.rpm
+    state: absent
+
+- name: Register with activation-key
+  redhat_subscription:
+    state: present
+    server_hostname: "{{ satellite_hostname }}"
+    activationkey: "{{ satellite_hosts_register_key }}"
+    org_id: "{{ org_label }}"
+
+# - name: Enable Repositories
+#   command: subscription-manager repos --enable=rhel-7-server-satellite-tools-6.3-rpms
+
+# - name: Install Katello Agent
+#   package:
+#     name: katello-agent
+#     state: latest
+
+# - name: Start Katello Agent
+#   service:
+#     name: goferd
+#     state: started
+#     enabled: yes
+
+- name: Enable repos
+  rhsm_repository:
+    name: "*"
+    state: enabled
+
+# Remote Execution Setup
+- name: Fetch smart proxies from the satellite for Remote Execution
+  uri:
+    url: "https://{{ satellite_hostname }}/api/v2/smart_proxies"
+    user: "{{ satellite_admin }}"
+    password: "{{ satellite_admin_password }}"
+    force_basic_auth: True
+  register: proxies_pubkeys_result
+
+- name: Debug of results
+  debug:
+    msg: " {{ proxies_pubkeys_result['json'] }} "
+
+- name: Register remote_execution_pubkey key
+  authorized_key:
+    user: "{{ remote_execution_user | d('root') }}"
+    state: present
+    key: "{{ item }}"
+  with_items: "{{ proxies_pubkeys_result['json'] | json_query('results[*].remote_execution_pubkey') | list }}"
+
+- name: Install cockpit
+  package:
+    name: cockpit-system
+    state: present
+  when: satellite_version is version_compare('6.7', '>=')
