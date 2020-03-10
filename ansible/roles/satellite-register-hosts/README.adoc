@@ -1,0 +1,95 @@
+:role: satellite-register-hosts
+:author: Satellite Team
+:tag1: configure_satellite
+:tag2: satellite_register_hosts
+:main_file: tasks/main.yml
+:version_file: tasks/version_6.x.yml
+
+Role: {role}
+============
+
+This role register content hosts to the satellite instance.
+
+Requirements
+------------
+
+. Satellite must be installed and setted up.
+. Activation key must be available and it's variable setted up.
+
+
+Role Variables
+--------------
+
+* Following are the variable which needs to be defined
+
+|===
+|satellite_version: "Digit" |Required |satellite version
+|org_label: "String" |Required |Organization label
+|satellite_hosts_register_key: "String" |Required | Activation key name
+|satellite_hostname: "String" |Required | Hostname of satellite to register to
+|===
+
+* Exammple variables
+
+[source=text]
+----
+satellite_version: 6.4
+org_label: "gpte"
+satellite_hosts_register_key: 'three-tier-app'
+
+# This is to illustrate how you'd get the key in your satellite
+# It's not used in this role
+satellite_content:
+  - name:             "Three Tier App"
+    content_view:     "Three Tier App"
+    activation_key:   "three-tier-app"
+----
+
+Tags
+---
+
+|===
+|{tag1} |Consistent tag for all satellite config roles
+|{tag2} |This tag is specific to this role only
+|===
+
+
+Example Playbook
+----------------
+
+How to use your role (for instance, with variables passed in playbook).
+
+[source=text]
+----
+[user@desktop ~]$ cat sample_vars.yml
+satellite_version: 6.7
+org: "gpte"
+org_label: "gpte"
+org_description: "Global Partner Training and Enablement"
+satellite_hosts_register_key: three_tier_app
+satellite_content:
+  - name:             "Three Tier App"
+    content_view:     "Three Tier App"
+    activation_key:   three_tier_app
+    repos:
+      - name: 'Red Hat Enterprise Linux 7 Server (RPMs)'
+        product: 'Red Hat Enterprise Linux Server'
+        basearch: 'x86_64'
+        releasever:  '7Server'
+
+[user@desktop ~]$ cat playbook.yml
+- hosts: satellite_hosts
+  vars_files:
+    - sample_vars.yml
+  vars:
+    satellite_hostname: "{{ hostvars['satellite']['publicname'] }}"
+  roles:
+    - satellite-register-hosts
+
+[user@desktop ~]$ ansible-playbook playbook.yml
+----
+
+Author Information
+------------------
+
+{author}
