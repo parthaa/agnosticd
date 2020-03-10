@@ -55,10 +55,10 @@
   gather_facts: True
   tasks:
     - when: configure_satellite
-      include_role:
+      import_role:
         name: satellite-register-hosts
-        vars:
-          satellite_hostname: "{{ hostvars['satellite']['publicname'] }}"
+  vars:
+    satellite_hostname: "{{ hostvars['satellite']['publicname'] }}"
 
 
 - name: Software flight-check
