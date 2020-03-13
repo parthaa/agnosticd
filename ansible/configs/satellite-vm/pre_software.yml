@@ -14,11 +14,12 @@
   hosts:
     - all:!windows:!satellite_hosts:!satellites
   become: true
-  gather_facts: False
+  gather_facts: true
   tags:
     - step004
     - common_tasks
   roles:
+    - role: satellite-public-hostname
     - role: "set-repositories"
       vars:
         rhel_repos: "{{ rhel7_repos }}"
@@ -31,11 +32,12 @@
   hosts:
     - satellites
   become: true
-  gather_facts: False
+  gather_facts: true
   tags:
     - step004
     - satellite_tasks
   roles:
+    - role: satellite-public-hostname
     - role: "set-repositories"
       vars:
         rhel_repos: "{{ rhel7_repos + satellite_repos }}"

@@ -13,10 +13,6 @@
   become: True
   gather_facts: True
   tasks:
-
-    - import_role:
-        name: satellite-public-hostname
-
     - when: install_satellite
       include_role:
         name: "{{ _role }}"
