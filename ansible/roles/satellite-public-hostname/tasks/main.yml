@@ -24,10 +24,19 @@
     - public_hostname
 
 - name: Add public hostname name in hosts file
-  lineinfile: 
-    dest: /etc/hosts 
-    state: present 
-    insertafter: EOF 
+  lineinfile:
+    dest: /etc/hosts
+    state: present
+    insertafter: EOF
     line: "{{ ansible_default_ipv4['address'] }}  {{ publicname }}"
   tags:
     - public_hostname
+
+- name: Add IP address of all hosts to all hosts
+  lineinfile:
+    dest: /etc/hosts
+    regexp: '.*{{ hostvars[item].ansible_fqdn  }}$'
+    line: "{{ hostvars[item].ansible_default_ipv4['address'] }} {{ hostvars[item].ansible_fqdn }}"
+    state: present
+  with_items: "{{ groups.all }}"
+
