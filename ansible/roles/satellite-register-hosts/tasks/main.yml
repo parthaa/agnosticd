@@ -81,5 +81,5 @@
   authorized_key:
     user: "{{ remote_execution_user | d('root') }}"
     state: present
-    key: item
+    key: "{{ item }}"
   with_items: "{{ result['json'] | json_query('results[*].remote_execution_pubkey') | list }}"
