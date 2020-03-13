@@ -44,18 +44,23 @@
         - satellite-manage-activationkey
         # - satellite-manage-capsule-certificate
 
-
 - name: Configure satellite hosts
   hosts: satellite_hosts
   become: True
   gather_facts: True
   tasks:
     - when: configure_satellite
-      import_role:
-        name: satellite-register-hosts
+      include_role:
+        name: "{{ _role }}"
+      loop_control:
+        loop_var: _role
+      loop:
+        - satellite-register-hosts
+        - satellite-setup-remote-execution-hosts
   vars:
     satellite_hostname: "{{ hostvars['satellite']['publicname'] }}"
-
+    username: "{{ satellite_admin }}"
+    password: "{{ satellite_admin_password }}"
 
 - name: Software flight-check
   hosts: localhost
