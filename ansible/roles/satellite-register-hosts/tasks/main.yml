@@ -63,3 +63,26 @@
   rhsm_repository:
     name: "*"
     state: enabled
+
+- name: Fetch smart proxies from the satellite
+  uri:
+    url: "https://{{ satellite_hostname }}/api/v2/smart_proxies"
+    user: "{{ satellite_admin }}"
+    password: "{{ satellite_admin_password }}"
+    validate_certs: "{{ validate_certs | default(True) }}"
+    force_basic_auth: True
+  register: result
+
+- name: Output of results
+  debug:
+    msg: " {{ result['json'] }} "
+
+- name: set the remote_execution_pubkey
+  set_fact:
+    remote_execution_pubkey: "{{ result['json'] | json_query('results[*].remote_execution_pubkey') | join('') }}"
+
+- name: Add the remote_execution_key to authorized keys
+  authorized_key:
+    user: "{{ remote_execution_user | d('root') }}"
+    state: present
+    key: "{{ remote_execution_pubkey }}"
