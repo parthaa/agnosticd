@@ -38,5 +38,6 @@
     regexp: '.*{{ hostvars[item].ansible_fqdn  }}$'
     line: "{{ hostvars[item].ansible_default_ipv4['address'] }} {{ hostvars[item].ansible_fqdn }}"
     state: present
+  when: 'hostvars[item].ansible_fqdn is defined'
   with_items: "{{ groups.all }}"
 
