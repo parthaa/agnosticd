@@ -1,0 +1,2 @@
+---
+rex_ssh_config_path: /usr/share/foreman-proxy/.ssh/config

@@ -45,6 +45,23 @@
         - satellite-manage-hostgroup
         # - satellite-manage-capsule-certificate
 
+# Config for internal and external capsules alike
+# - name: Configure external capsules
+#   hosts: capsules
+#   become: true
+#   gather_facts: true
+#   tasks:
+#     - import_role:
+#         name: satellite-capsule-installation
+
+# Config for internal and external capsules alike
+- name: Configure capsules
+  hosts: satellites:!capsules
+  become: true
+  gather_facts: true
+  tasks:
+    - import_role:
+        name: satellite-capsule-rex
 
 - name: Configure satellite hosts
   hosts: satellite_hosts
