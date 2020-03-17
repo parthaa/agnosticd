@@ -21,7 +21,7 @@ firewall_ports:
 # - 67/udp
 # - 68/udp
 # - 69/udp
-# - 80/tcp
+  - 80/tcp
 # - 389/tcp
   - 443/tcp
 # - 639/tcp
