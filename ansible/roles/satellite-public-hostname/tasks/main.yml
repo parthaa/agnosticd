@@ -32,11 +32,11 @@
   tags:
     - public_hostname
 
-- name: Add IP address of all hosts to all hosts
-  lineinfile:
-    dest: /etc/hosts
-    regexp: '.*{{ hostvars[item].ansible_fqdn  }}$'
-    line: "{{ hostvars[item].ansible_default_ipv4['address'] }} {{ hostvars[item].ansible_fqdn }}"
-    state: present
-  with_items: "{{ groups.all }}"
+# - name: Add IP address of all satellite hosts
+#   lineinfile:
+#     dest: /etc/hosts
+#     regexp: '.*{{ hostvars[item].ansible_fqdn  }}$'
+#     line: "{{ hostvars[item].ansible_default_ipv4['address'] }} {{ hostvars[item].ansible_fqdn }}"
+#     state: present
+#   with_items: "{{ groups['satellite_hosts'] }}"
 
