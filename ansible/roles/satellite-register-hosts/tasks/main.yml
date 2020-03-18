@@ -48,16 +48,16 @@
 # - name: Enable Repositories
 #   command: subscription-manager repos --enable=rhel-7-server-satellite-tools-6.3-rpms
 
-- name: Install Katello Agent
-  package:
-    name: katello-agent
-    state: latest
+# - name: Install Katello Agent
+#   package:
+#     name: katello-agent
+#     state: latest
 
-- name: Start Katello Agent
-  service:
-    name: goferd
-    state: started
-    enabled: yes
+# - name: Start Katello Agent
+#   service:
+#     name: goferd
+#     state: started
+#     enabled: yes
 
 - name: Enable repos
   rhsm_repository:

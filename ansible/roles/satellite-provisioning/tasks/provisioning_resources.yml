@@ -54,7 +54,7 @@
     state: present
 
 - name: "Set a Setting"
-  foreman_setting:
+  theforeman.foreman.foreman_setting:
     server_url: "https://{{ publicname }}"
     username: "{{ satellite_admin }}"
     password: "{{ satellite_admin_password }}"
