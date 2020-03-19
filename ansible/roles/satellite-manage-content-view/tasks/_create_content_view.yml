@@ -21,3 +21,23 @@
     name: "{{ content.content_view }}"
     organization: "{{ org }}"
     repositories: "{{ content_temp_repositories }}"
+
+- theforeman.foreman.katello_content_view_filter:
+    username: "{{ satellite_admin }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "https://{{ publicname }}"
+    validate_certs: no
+    name: "{{ content.content_view }}-erratum-{{ filter_index }}"
+    organization: "{{ org }}"
+    content_view: "{{ content.content_view }}"
+    repositories: "{{ content_temp_repositories }}"
+    filter_type: "erratum"
+    start_date: "{{ item.start_date }}"
+    end_date: "{{ item.end_date | d('')}}"
+    types: "{{ item.types | d('bugfix,enhancement,security') }}"
+    date_type: "{{ item.date_type | d('updated')}}"
+    inclusion: "{{ item.inclusion | d(False)}}"
+  when: content.filters is defined and item.type == 'erratum_date'
+  loop: "{{ content.filters }}"
+  loop_control:
+    index_var: filter_index
