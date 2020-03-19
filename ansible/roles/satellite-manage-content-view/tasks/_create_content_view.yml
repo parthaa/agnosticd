@@ -27,7 +27,7 @@
     password: "{{ satellite_admin_password }}"
     server_url: "https://{{ publicname }}"
     validate_certs: no
-    name: "{{ content.content_view }}-erratum-{{ filter_index }}"
+    name: "{{ item.name }}"
     organization: "{{ org }}"
     content_view: "{{ content.content_view }}"
     repositories: "{{ content_temp_repositories }}"
@@ -39,5 +39,3 @@
     inclusion: "{{ item.inclusion | d(False)}}"
   when: content.filters is defined and item.type == 'erratum_date'
   loop: "{{ content.filters }}"
-  loop_control:
-    index_var: filter_index
