@@ -39,6 +39,9 @@ Role Variables
 !pxe_loader: "String"
 !ptable: "String"
 !root_pass: "String"
+!compute_profile: "String"
+!domain: "String"
+!subnet: "String"
 !===
 |Required
 !===
@@ -53,6 +56,9 @@ Role Variables
 !Required
 !Required
 !Required(*changeme*)
+!Optional(*''*)
+!Optional(*''*)
+!Optional(*''*)
 !===
 |List of hostgroups to create
 !===
@@ -67,10 +73,13 @@ Role Variables
 !Pxe loader type
 !Partition table to use
 !Root password for hosts
+!Compute Profile name
+!Domain name
+!Subnet name
 !===
 |===
 
-* Exammple variables
+* Example variables
 
 [source=text]
 ----
@@ -88,6 +97,9 @@ satellite_hostgroups:
     ptable: 'Kickstart default'
     pxe_loader: 'PXELinux BIOS'
     compute_resource: 'LibvirtLocal'
+    domain: 'example.org'
+    subnet: 'SubnetLocal'
+    compute_profile: '1-Small'
 
 ----
 
@@ -122,6 +134,9 @@ satellite_hostgroups:
     ptable: 'Kickstart default'
     pxe_loader: 'PXELinux BIOS'
     compute_resource: 'LibvirtLocal'
+    domain: 'example.org'
+    subnet: 'SubnetLocal'
+    compute_profile: '1-Small'
 
 [user@desktop ~]$ cat playbook.yml
 - hosts: satellites

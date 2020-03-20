@@ -21,6 +21,9 @@
     server_url: "https://{{ publicname }}"
     validate_certs: no
     state: present
+    domain: "{{ item.domain | d(omit) }}"
+    subnet: "{{ item.subnet | d(omit) }}"
+    compute_profile: "{{ item.compute_profile | d(omit) }}"
   with_items: "{{ satellite_hostgroups }}"
   tags:
     - configure_satellite
