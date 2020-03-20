@@ -41,6 +41,7 @@
         - satellite-manage-lifecycle
         - satellite-manage-content-view
         - satellite-manage-activationkey
+        - satellite-manage-compute-profile
         - satellite-manage-hostgroup
         # - satellite-manage-capsule-certificate
 
