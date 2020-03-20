@@ -14,6 +14,7 @@
             nics_attributes: "{{ item.nics_attributes }}"
             volumes_attributes: "{{ item.volume_attributes }}"
   with_items: "{{ satellite_compute_profiles }}"
+  when: satellite_compute_profiles is defined
   tags:
     - configure_satellite
     - satellite_compute_profile
