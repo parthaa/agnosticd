@@ -13,6 +13,7 @@
     satellite-installer --scenario satellite
     --foreman-initial-admin-username {{ satellite_admin }}
     --foreman-initial-admin-password {{ satellite_admin_password }}
+    --foreman-initial-organization {{ org }}
     --certs-cname {{ inventory_hostname }}
     --enable-foreman-plugin-remote-execution-cockpit
     --foreman-proxy-dhcp true
