@@ -11,7 +11,7 @@
     satellite-installer --scenario satellite
     --foreman-admin-username {{ satellite_admin }}
     --foreman-admin-password {{ satellite_admin_password }}
-    --foreman-initial-organization {{ org }}
+    --foreman-initial-organization "{{ org }}"
     --certs-cname {{inventory_hostname}}
     --foreman-proxy-dhcp true
     --foreman-proxy-dhcp-provider libvirt
