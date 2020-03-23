@@ -43,6 +43,7 @@
         - satellite-manage-activationkey
         - satellite-manage-compute-profile
         - satellite-manage-hostgroup
+        - satellite-insights
         # - satellite-manage-capsule-certificate
 
 # Config for internal and external capsules alike
