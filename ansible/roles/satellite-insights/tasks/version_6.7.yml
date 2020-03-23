@@ -9,11 +9,11 @@
 
 - name: "Refresh the manifest to reset cdn url to default"
   theforeman.foreman.katello_manifest:
-    username: "admin"
-    password: "admin"
-    server_url: "https://satellite.oezrsat2.students.osp.opentlc.com"
-    organization: "Red Hat"
+    username: "{{ satellite_admin }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "https://{{ publicname }}"
     validate_certs: no
+    organization: "{{ org }}"
     repository_url: "https://cdn.redhat.com"
     manifest_path: "/tmp/{{ manifest_basename }}"
     state: present

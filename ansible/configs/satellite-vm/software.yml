@@ -33,6 +33,7 @@
       loop_control:
         loop_var: _role
       loop:
+        - satellite-manage-setting
         - satellite-manage-organization
         - satellite-manage-userroles
         - satellite-provisioning
