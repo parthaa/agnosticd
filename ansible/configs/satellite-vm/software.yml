@@ -73,8 +73,8 @@
     - when: configure_satellite
       include_role:
         name: satellite-register-host
-        vars:
-          satellite_hostname: "{{ hostvars[groups['satellites'][0]]['publicname'] }}"
+      vars:
+        satellite_hostname: "{{ hostvars[groups['satellites'][0]]['publicname'] }}"
 
 
 - name: Software flight-check
