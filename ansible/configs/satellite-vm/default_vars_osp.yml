@@ -20,6 +20,7 @@ bastion_instance_type: 2c2g30d
 satellite_instance_type: 8c32g100d
 capsule_instance_type: 4c16g30d
 host_instance_type: 2c2g30d
+satellite_host_root_fs_size: 100
 
 satellite_host_root_fs_size: 100
 
